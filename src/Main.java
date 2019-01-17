@@ -89,6 +89,19 @@ public class Main {
         System.out.println("State of the mask after the fourth step");
         printMask(mask);
 
+        //Step 5
+
+        for (int i = 0; i < width; i++) {
+            for (int j = 0; j < height; j++) {
+                if (mask[j][i]==4){
+                    mask[j][i]=0;
+                }
+            }
+        }
+
+        System.out.println("State of the mask after the fifth step");
+        printMask(mask);
+
     }
 
     //Count sticking neighbours that are not 0
