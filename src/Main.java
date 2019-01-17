@@ -5,7 +5,7 @@ import java.io.File;
 public class Main {
 
     public static void main(String[] args) throws java.io.IOException {
-        File f = new File("input.png");
+        File f = new File("test.png");
         BufferedImage in = ImageIO.read(f);
         kmm(threshold(in, 1));
     }
@@ -15,6 +15,102 @@ public class Main {
 
     private static void kmm(BufferedImage in){
 
+        //Represent the output image as a 2D array
+        int width = in.getWidth(), height=in.getHeight();
+        int[][] mask = new int[height][width];
+
+        //Add zero padding
+        in = addZeroPadding(in);
+
+        //Step 1
+        for (int i = 0; i < width; i++) {
+            for (int j = 0; j < height; j++) {
+                //Using getG() here because all channels are the same in grayscale image but this works for now
+                //TODO: Replace getG() with a better method
+                int val = getG(in.getRGB(i+1,j+1));
+                if (val==0){
+                    mask[j][i]=1;
+                }else{
+                    mask[j][i]=0;
+                }
+            }
+        }
+
+        System.out.println("State of the mask after the first step");
+        printMask(mask);
+
+        //Step 2
+
+        for (int i = 0; i < width; i++) {
+            for (int j = 0; j < height; j++) {
+                if (mask[j][i]==1){
+                    if (checkEdges(addMaskZeroPadding(mask), i+1, j+1)) {
+                        mask[j][i] = 2;
+                    }
+                }
+            }
+        }
+
+        System.out.println("State of the mask after the second step");
+        printMask(mask);
+
+        //Step 3
+
+
+
+    }
+
+    //Cheking edges of a pixel to test for neighbours
+    private static boolean checkEdges(int[][] mask, int x, int y){
+
+        if(mask[y+1][x]==0||mask[y-1][x]==0||mask[y][x+1]==0||mask[y][x-1]==0) return true;
+        return false;
+    }
+
+    //Printing the mask (2D array)
+    private static void printMask(int[][] mask){
+        for (int i = 0; i < mask.length; i++) {
+            for (int j = 0; j < mask[0].length; j++) {
+                int val = mask[i][j];
+                //Comment the line below to see the mask with 0s in it
+                if (val==0) {System.out.print(" ");} else
+                    System.out.print(val);
+            }
+            System.out.println();
+        }
+    }
+
+    //Zero padding for mask
+    private static int[][] addMaskZeroPadding(int[][] mask){
+        //Add 0 padding to mask
+        int[][] paddedMask= new int[mask.length+2][mask[0].length+2];
+        for (int i = 0; i < paddedMask.length; i++) {
+            for (int j = 0; j < paddedMask[0].length; j++) {
+                if (i == 0 || i == paddedMask.length - 1 || j == 0 || j == paddedMask[0].length - 1) {
+                    paddedMask[i][j]=0;
+                } else {
+                    paddedMask[i][j]=mask[i-1][j-1];
+                }
+            }
+        }
+        return paddedMask;
+    }
+
+    // Zero padding
+    public static BufferedImage addZeroPadding(BufferedImage in) {
+        BufferedImage out = new BufferedImage(in.getWidth() + 2, in.getHeight() + 2, in.getType());
+
+        for (int i = 0; i < out.getHeight(); i++) {
+            for (int j = 0; j < out.getWidth(); j++) {
+                if (i == 0 || i == out.getHeight() - 1 || j == 0 || j == out.getWidth() - 1) {
+                    out.setRGB(j, i, toRGB(0, 0, 0));
+                } else {
+                    out.setRGB(j, i, in.getRGB(j - 1, i - 1));
+                }
+            }
+        }
+
+        return out;
     }
 
     // Thresholding
@@ -34,7 +130,6 @@ public class Main {
         }
         return out;
     }
-
 
     // Grayscale
     private static BufferedImage grayscale(BufferedImage in) {
