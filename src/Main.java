@@ -1,6 +1,11 @@
+import com.sun.deploy.util.ArrayUtil;
+
 import javax.imageio.ImageIO;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public class Main {
 
@@ -56,14 +61,72 @@ public class Main {
 
         //Step 3
 
+        for (int i = 0; i < width; i++) {
+            for (int j = 0; j < height; j++) {
+                if (mask[j][i]==1){
+                    if (checkCorners(addMaskZeroPadding(mask), i+1, j+1)) {
+                        mask[j][i] = 3;
+                    }
+                }
+            }
+        }
 
+        System.out.println("State of the mask after the third step");
+        printMask(mask);
 
+        //Step 4
+
+        for (int i = 0; i < width; i++) {
+            for (int j = 0; j < height; j++) {
+                if (mask[j][i]==2||mask[j][i]==3){
+                    if (countNeighbours(addMaskZeroPadding(mask),i+1,j+1)) {
+                        mask[j][i] = 4;
+                    }
+                }
+            }
+        }
+
+        System.out.println("State of the mask after the fourth step");
+        printMask(mask);
+
+    }
+
+    //Count sticking neighbours that are not 0
+    private static boolean countNeighbours(int[][] mask, int x, int y){
+        int[] neighbours = new int[8];
+        neighbours[0]=mask[y-1][x-1];
+        neighbours[1]=mask[y-1][x];
+        neighbours[2]=mask[y-1][x+1];
+        neighbours[3]=mask[y][x+1];
+        neighbours[4]=mask[y+1][x+1];
+        neighbours[5]=mask[y+1][x];
+        neighbours[6]=mask[y+1][x-1];
+        neighbours[7]=mask[y][x-1];
+        int counter=0, loc=0, nonZeroCount=0;
+        for (int i =0; i<16;i++){
+            if(neighbours[i%8]>0){
+                loc++;
+                if(i<8) nonZeroCount++;
+            }else {
+                if(loc>counter)counter=loc;
+                loc=0;
+            }
+        }
+        if(loc>counter)counter=loc;
+        if(nonZeroCount==counter&&(counter == 2 || counter==3||counter==4)) return true;
+
+        return false;
     }
 
     //Cheking edges of a pixel to test for neighbours
     private static boolean checkEdges(int[][] mask, int x, int y){
-
         if(mask[y+1][x]==0||mask[y-1][x]==0||mask[y][x+1]==0||mask[y][x-1]==0) return true;
+        return false;
+    }
+
+    //Cheking edges of a pixel to test for neighbours
+    private static boolean checkCorners(int[][] mask, int x, int y){
+        if(mask[y+1][x+1]==0||mask[y-1][x-1]==0||mask[y-1][x+1]==0||mask[y+1][x-1]==0) return true;
         return false;
     }
 
