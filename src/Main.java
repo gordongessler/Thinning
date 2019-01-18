@@ -26,7 +26,6 @@ public class Main {
     }
 
     //TODO: KMM
-    //TODO: K3M
 
     private static BufferedImage k3m(BufferedImage in){
 
@@ -78,35 +77,8 @@ public class Main {
         return out;
     }
 
-    private static int[][] addMaskZeroPadding(int[][] mask){
-        //Add 0 padding to mask
-        int[][] paddedMask= new int[mask.length+2][mask[0].length+2];
-        for (int i = 0; i < paddedMask.length; i++) {
-            for (int j = 0; j < paddedMask[0].length; j++) {
-                if (i == 0 || i == paddedMask.length - 1 || j == 0 || j == paddedMask[0].length - 1) {
-                    paddedMask[i][j]=0;
-                } else {
-                    paddedMask[i][j]=mask[i-1][j-1];
-                }
-            }
-        }
-        return paddedMask;
-    }
-
-    //Printing the mask (2D array)
-    private static void printMask(int[][] mask){
-        for (int i = 0; i < mask.length; i++) {
-            for (int j = 0; j < mask[0].length; j++) {
-                int val = mask[i][j];
-                //Comment the line below to see the mask with 0s in it
-                if (val==0) {System.out.print(" ");} else
-                    System.out.print(val);
-            }
-            System.out.println();
-        }
-    }
-
     //K3M Utility
+
     private static ArrayList<Position> border(int[][] image, HashSet<Integer> a0) {
         ArrayList<Position> borderPixels = new ArrayList<>();
 
@@ -119,7 +91,6 @@ public class Main {
 
         return borderPixels;
     }
-
     private static int pixelWeight( int[][] image, int x, int y) {
         int weight = 0;
         image=addMaskZeroPadding(image);
@@ -192,8 +163,6 @@ public class Main {
             249, 251, 252, 254
     ));
 
-    private static ArrayList<HashSet<Integer>> weightsSets = new ArrayList<>(Arrays.asList(a1, a2, a3, a4, a5));
-
     private static HashSet<Integer> a1pix = new HashSet<>(Arrays.asList(
             3, 6, 7, 12, 14, 15, 24, 28, 30, 31, 48, 56,
             60, 62, 63, 96, 112, 120, 124, 126, 127, 129, 131,
@@ -203,7 +172,37 @@ public class Main {
     ));
 
 
+
     //Utility
+
+    //Zero padding for mask
+    private static int[][] addMaskZeroPadding(int[][] mask){
+        //Add 0 padding to mask
+        int[][] paddedMask= new int[mask.length+2][mask[0].length+2];
+        for (int i = 0; i < paddedMask.length; i++) {
+            for (int j = 0; j < paddedMask[0].length; j++) {
+                if (i == 0 || i == paddedMask.length - 1 || j == 0 || j == paddedMask[0].length - 1) {
+                    paddedMask[i][j]=0;
+                } else {
+                    paddedMask[i][j]=mask[i-1][j-1];
+                }
+            }
+        }
+        return paddedMask;
+    }
+
+    //Printing the mask (2D array)
+    private static void printMask(int[][] mask){
+        for (int i = 0; i < mask.length; i++) {
+            for (int j = 0; j < mask[0].length; j++) {
+                int val = mask[i][j];
+                //Comment the line below to see the mask with 0s in it
+                if (val==0) {System.out.print(" ");} else
+                    System.out.print(val);
+            }
+            System.out.println();
+        }
+    }
 
     // Thresholding
     private static BufferedImage threshold(BufferedImage in, int threshold) {
@@ -222,7 +221,6 @@ public class Main {
         }
         return out;
     }
-
 
     // Grayscale
     private static BufferedImage grayscale(BufferedImage in) {
