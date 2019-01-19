@@ -18,13 +18,11 @@ class Position {
 public class Main {
 
     public static void main(String[] args) throws java.io.IOException {
-        File f = new File("test2.png");
+        File f = new File("test.png");
         BufferedImage in = ImageIO.read(f);
         ImageIO.write( k3m(threshold(in, 1)), "png", new File("outputK3M.png"));
         ImageIO.write( kmm(threshold(in, 1)), "png", new File("outputKMM.png"));
     }
-
-    //TODO: KMM
 
     private static BufferedImage k3m(BufferedImage in){
 
@@ -35,13 +33,11 @@ public class Main {
         boolean flag = true;
         while (flag){
             ArrayList<Position> borderPix = border(image,a0);
-           // System.out.println(borderPix.toString());
             borderPix=phase(image,borderPix,a1);
             borderPix=phase(image,borderPix,a2);
             borderPix=phase(image,borderPix,a3);
             borderPix=phase(image,borderPix,a4);
             borderPix=phase(image,borderPix,a5);
-           // System.out.println(oldLenght+"|"+borderPix.size());
             if (oldLenght==borderPix.size()) flag=false;
             oldLenght=borderPix.size();
         }
@@ -93,6 +89,8 @@ public class Main {
         }
         return out;
     }
+
+    //KMM Utility
 
     public static void arrayCopy(int[][] aSource, int[][] aDestination) {
         for (int i = 0; i < aSource.length; i++) {
@@ -165,8 +163,6 @@ public class Main {
         return image;
     }
 
-    //KMM Utility
-
     private static int countNeighbours(int[][] image, int x, int y) {
         int neighbourCount =0;
         for (int i = -1; x <= 1; x++) {
@@ -178,7 +174,6 @@ public class Main {
         }
         return neighbourCount;
     }
-
 
     private static int[][] markPixels(BufferedImage in){
         int width = in.getWidth(), height = in.getHeight();
@@ -349,15 +344,15 @@ public class Main {
     //Utility
 
     //Zero padding for mask
-    private static int[][] addMaskZeroPadding(int[][] mask){
+    private static int[][] addMaskZeroPadding(int[][] image){
         //Add 0 padding to mask
-        int[][] paddedMask= new int[mask.length+2][mask[0].length+2];
+        int[][] paddedMask= new int[image.length+2][image[0].length+2];
         for (int i = 0; i < paddedMask.length; i++) {
             for (int j = 0; j < paddedMask[0].length; j++) {
                 if (i == 0 || i == paddedMask.length - 1 || j == 0 || j == paddedMask[0].length - 1) {
                     paddedMask[i][j]=0;
                 } else {
-                    paddedMask[i][j]=mask[i-1][j-1];
+                    paddedMask[i][j]=image[i-1][j-1];
                 }
             }
         }
@@ -365,12 +360,12 @@ public class Main {
     }
 
     //Printing the mask (2D array)
-    private static void printMask(int[][] mask){
+    private static void printMask(int[][] image){
         //int[][] image = new int[width][height];
-        int width=mask.length, height=mask[0].length;
+        int width=image.length, height=image[0].length;
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
-                int pixel=mask[x][y];
+                int pixel=image[x][y];
                 //Comment the line below to see the mask with 0s in it
                 if (pixel==0) {System.out.print(" ");} else
                     System.out.print(pixel);
